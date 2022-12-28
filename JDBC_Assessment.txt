@@ -1,0 +1,192 @@
+Perform a crud operations by using java and jdbc API
+
+package com.tech;
+//customer class it provides the information about customer
+public class Customer {
+	private int id;
+	private String name;
+	private int age;
+	private float salary;
+	public Customer() {
+	
+	}
+	public int getId() {
+		return id;
+	}
+	public void setId(int id) {
+		this.id = id;
+	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public int getAge() {
+		return age;
+	}
+	public void setAge(int age) {
+		this.age = age;
+	}
+	public float getSalary() {
+		return salary;
+	}
+	public void setSalary(float salary) {
+		this.salary = salary;
+	}
+	public char getAddress() {
+		return address;
+	}
+	public void setAddress(char address) {
+		this.address = address;
+	}
+	private char address;
+
+	
+
+}
+
+
+
+//this is create class
+
+package com.tech;
+//create class contains create,insert ,delete,update and display methods
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.Scanner;
+
+import com.mysql.cj.protocol.Resultset;
+//create method for creating table in employee database
+public class Create {
+	Scanner sc=new Scanner(System.in);
+	public void create() throws ClassNotFoundException, SQLException {
+        Class.forName("com.mysql.jdbc.Driver");  
+        Connection con = DriverManager.getConnection("jdbc:mysql://localhost/employee", "root", "root");  
+        Statement s = con.createStatement();  
+
+	      //Query to create a table
+        String query = "CREATE TABLE CUSTOMERS("
+                + "ID INT NOT NULL, "
+                + "NAME VARCHAR (20) NOT NULL, "
+                + "AGE INT NOT NULL, "
+                + "SALARY DECIMAL (18, 2), "
+                + "ADDRESS CHAR (25) , "
+                + "PRIMARY KEY (ID))";
+
+	      s.execute(query);
+	      System.out.println("Table Created......");
+	   }
+	//insert method is used for inserting data into table
+	public void insert() throws SQLException, ClassNotFoundException {
+		 Class.forName("com.mysql.jdbc.Driver");  
+	        Connection con = DriverManager.getConnection("jdbc:mysql://localhost/employee", "root", "root");  
+	        PreparedStatement s = con.prepareStatement("insert into CUSTOMERS"
+	        		+ " values(?,?,?,?)"); 
+	        Customer customer=new Customer();
+	        System.out.println("enter id");
+	        int id=sc.nextInt();
+	        System.out.println("enter name");
+	        String name=sc.next();
+	        System.out.println("enter age");
+	        int age=sc.nextInt();
+	        System.out.println("enter salary");
+	        float salary=sc.nextFloat();
+	        s.setInt(1, id);
+	        s.setString(2, name);
+	        s.setInt(3,age);
+	        s.setFloat(4, salary);
+	        s.execute();
+	        int i=s.executeUpdate();
+	        if(i>0) {
+	        	System.out.println("inserted successfully");
+	        }
+	        
+		
+	}
+	//update method is used for update the table
+	public void update() throws ClassNotFoundException, SQLException {
+		Class.forName("com.mysql.jdbc.Driver");  
+        Connection con = DriverManager.getConnection("jdbc:mysql://localhost/employee", "root", "root");  
+        PreparedStatement s = con.prepareStatement("update customers set name=?,age=?,salary=? where id=?");
+        Customer customer=new Customer();
+        System.out.println("enter id");
+        int id=sc.nextInt();
+        System.out.println("enter name");
+        String name=sc.next();
+        System.out.println("enter age");
+        int age=sc.nextInt();
+        System.out.println("enter salary");
+        float salary=sc.nextFloat();
+        s.setInt(4, id);
+        s.setString(1, name);
+        s.setInt(2,age);
+        s.setFloat(3, salary);
+        s.execute();
+        int i=s.executeUpdate();
+        if(i>0) {
+        	System.out.println("updated successfully");
+        }
+		
+	}
+	//display table is for diplaying the data present in table
+	public void display() throws ClassNotFoundException, SQLException {
+		Class.forName("com.mysql.jdbc.Driver");  
+        Connection con = DriverManager.getConnection("jdbc:mysql://localhost/employee", "root", "root");
+        String query="select * from customers";
+        Statement stmt=con.createStatement();
+        ResultSet rs=stmt.executeQuery(query);
+        while(rs.next()) {
+        	System.out.println("customerId:"+rs.getInt(1));
+        	System.out.println("CustomerName: "+rs.getString(2));
+        	System.out.println("Customer age:"+rs.getInt(3));
+        	System.out.println("CustomerSalary :"+rs.getFloat(4));
+        }
+		
+	}
+	//delete method is used foe delete the data from table
+	public void delete() throws ClassNotFoundException, SQLException {
+		Class.forName("com.mysql.jdbc.Driver");  
+        Connection con = DriverManager.getConnection("jdbc:mysql://localhost/employee", "root", "root");
+        String query="delete * from customers where id=?";
+        PreparedStatement stmt=con.prepareStatement("delete from customers where id=?");
+        System.out.println("enter id");
+        int id=sc.nextInt();
+        stmt.setInt(1, id);
+        int i=stmt.executeUpdate();
+        if(i>0) {
+        	System.out.println("deleted successfully");
+       
+        }
+		
+	}
+	public static void main(String[] args) {
+		try {
+		Create create=new Create();
+		Scanner sc=new Scanner("System.in");
+		System.out.println("enter 1 forr insert,2 for update,3 for delete,4 for diplay, 5 for create");
+		int n=sc.nextInt();
+		switch(n) {
+		case 1:create.insert();
+		break;
+		case 4:create.display();
+		break;
+		case 3:create.delete();
+		break;
+		case 2:create.update();
+		break;
+		case 5:create.create();
+		break;
+		default:System.out.println("enter valid number");
+		}
+	}catch(Exception e) {
+		System.out.println(e);
+	}
+
+}
+}
+
